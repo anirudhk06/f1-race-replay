@@ -149,12 +149,16 @@ class LeaderboardComponent(BaseComponent):
         self.show_gaps = getattr(window, "leaderboard_show_gaps", self.show_gaps)
         self.show_neighbor_gaps = getattr(window, "leaderboard_show_neighbor_gaps", self.show_neighbor_gaps)
 
-        # small toggles to the right of the title: interval gaps and leader gaps
+        # If both were set externally, prefer neighbor (interval) gaps and clear leader gaps.
+        if self.show_gaps and self.show_neighbor_gaps:
+            self.show_gaps = False
+
+        # small radio btns to the right of the title: interval gaps and leader gaps
         toggle_radius = 10
         toggle_y = leaderboard_y - 15
         gap_between_toggles = 30
         
-        # interval toggle (I)
+        # interval radio-btn (I)
         neighbor_x = self.x + self.width - gap_between_toggles - toggle_radius
         self.neighbor_toggle_rect = (neighbor_x - toggle_radius, toggle_y - toggle_radius, neighbor_x + toggle_radius, toggle_y + toggle_radius)
         nb_bg = (100, 100, 100) if not self.show_neighbor_gaps else (50, 150, 50)
@@ -163,7 +167,7 @@ class LeaderboardComponent(BaseComponent):
         arcade.draw_circle_outline(neighbor_x, toggle_y, toggle_radius, nb_border, 2)
         arcade.Text("I", neighbor_x, toggle_y, arcade.color.WHITE, 12, anchor_x="center", anchor_y="center", bold=True).draw()
 
-        # leader toggle (L)
+        # leader radio-btn (L)
         toggle_x = self.x + self.width - toggle_radius
         self.gap_toggle_rect = (toggle_x - toggle_radius, toggle_y - toggle_radius, toggle_x + toggle_radius, toggle_y + toggle_radius)
         lg_bg = (100, 100, 100) if not self.show_gaps else (50, 150, 50)
@@ -235,9 +239,9 @@ class LeaderboardComponent(BaseComponent):
 
             # if either leader or neighbor gaps are enabled, draw the gap text
             if getattr(self, "show_neighbor_gaps", False) or getattr(self, "show_gaps", False):
-                gap_x = right_x - 28
+                gap_x = right_x - 36
                 if 'gap_text' in locals() and gap_text:
-                    gap_color = arcade.color.BLACK if code == self.selected else arcade.color.LIGHT_GRAY
+                    gap_color = arcade.color.BLACK if code in self.selected else arcade.color.LIGHT_GRAY
                     arcade.Text(gap_text, gap_x, top_y, gap_color, 12, anchor_x="right", anchor_y="top").draw()
 
             # Tyre Icons
@@ -273,19 +277,27 @@ class LeaderboardComponent(BaseComponent):
 
 
     def on_mouse_press(self, window, x: float, y: float, button: int, modifiers: int):
-        # interval toggle
+        # interval toggle (radio behaviour)
         if self.neighbor_toggle_rect:
             n_left, n_bottom, n_right, n_top = self.neighbor_toggle_rect
             if n_left <= x <= n_right and n_bottom <= y <= n_top:
-                self.show_neighbor_gaps = not self.show_neighbor_gaps
-                setattr(window, "leaderboard_show_neighbor_gaps", self.show_neighbor_gaps)
+                # select interval gaps and deselect leader gaps
+                if not self.show_neighbor_gaps:
+                    self.show_neighbor_gaps = True
+                    self.show_gaps = False
+                    setattr(window, "leaderboard_show_neighbor_gaps", True)
+                    setattr(window, "leaderboard_show_gaps", False)
                 return True
-        # leader toggle
+        # leader toggle (radio behaviour)
         if self.gap_toggle_rect:
             g_left, g_bottom, g_right, g_top = self.gap_toggle_rect
             if g_left <= x <= g_right and g_bottom <= y <= g_top:
-                self.show_gaps = not self.show_gaps
-                setattr(window, "leaderboard_show_gaps", self.show_gaps)
+                # select leader gaps and deselect interval gaps
+                if not self.show_gaps:
+                    self.show_gaps = True
+                    self.show_neighbor_gaps = False
+                    setattr(window, "leaderboard_show_gaps", True)
+                    setattr(window, "leaderboard_show_neighbor_gaps", False)
                 return True
 
         for code, left, bottom, right, top in self.rects:
