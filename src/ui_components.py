@@ -35,7 +35,7 @@ class LegendComponent(BaseComponent):
                     texture_name = os.path.splitext(filename)[0]
                     texture_path = os.path.join(icons_folder, filename)
                     self._control_icons_textures[texture_name] = arcade.load_texture(texture_path)
-        self.lines = ["Help"]
+        self.lines = ["Help (Click or 'H')"]
         
         self.controls_text_offset = 180
         self._text = arcade.Text("", 0, 0, arcade.color.CYAN, 14)
@@ -121,7 +121,7 @@ class LegendComponent(BaseComponent):
                 for j in range(len(brackets)):
                     self._text.font_size = 14
                     self._text.bold = (i == 0)
-                    self._text.color = arcade.color.LIGHT_GRAY if i > 0 else arcade.color.WHITE
+                    self._text.color = arcade.color.LIGHT_GRAY
                     self._text.text = brackets[j]
                     self._text.x = self.x + (j * (icon_size + 5))
                     self._text.y = self.y - (i * 25)
@@ -785,7 +785,7 @@ class ControlsPopupComponent(BaseComponent):
         cy = self.cy if self.cy is not None else window.height / 2
         rect = arcade.XYWH(cx, cy, self.width, self.height)
         arcade.draw_rect_filled(rect, (0, 0, 0, 255))
-        arcade.draw_rect_outline(rect, arcade.color.WHITE, 2)
+        arcade.draw_rect_outline(rect, arcade.color.GRAY, 2)
 
         
         header_height = max(28, int(self.header_font_size * 2))
@@ -810,7 +810,7 @@ class ControlsPopupComponent(BaseComponent):
             "[R]    Restart",
             "[D]    Toggle DRS Zones",
             "[B]    Toggle Progress Bar",
-            "[L]    Toggle Legend"
+            "[H]    Toggle Help Popup",
         ]
         
         line_spacing = max(18, int(self.body_font_size + 8))

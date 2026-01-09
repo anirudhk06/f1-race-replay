@@ -497,8 +497,8 @@ class F1RaceReplayWindow(arcade.Window):
             self.race_controls_comp.flash_button('rewind')
         elif symbol == arcade.key.D:
             self.toggle_drs_zones = not self.toggle_drs_zones
-        elif symbol == arcade.key.L:
-            # Toggle Controls popup with 'L' key — show anchored to bottom-left with 20px margin
+        elif symbol == arcade.key.H:
+            # Toggle Controls popup with 'H' key — show anchored to bottom-left with 20px margin
             margin_x = 20
             margin_y = 20
             left_pos = float(margin_x)
